@@ -59,7 +59,7 @@ export const constantRoutes = [
   {
     path: '/teacher',
     component: Layout,
-    redirect: '/teacher/table',
+    redirect: '/teacher/list',
     name: '讲师管理',
     meta: { title: '讲师管理', icon: 'el-icon-s-help' },
     children: [
@@ -74,6 +74,13 @@ export const constantRoutes = [
         name: '添加讲师',
         component: () => import('@/views/edu/teacher/add'),
         meta: { title: '添加讲师', icon: 'tree' }
+      },
+      {
+        path: 'update/:id',
+        name: '添加讲师',
+        component: () => import('@/views/edu/teacher/add'),
+        meta: { title: '添加讲师', icon: 'tree' },
+        hidden : true
       }
     ]
   },

@@ -37,8 +37,11 @@
             </el-table-column>
             <el-table-column>
                 <template slot-scope="scope">      
-                        <el-button type="primary" @click="">修改</el-button>
-                        <el-button type="success" @click="deleteById(scope.row.id)">删除</el-button>
+                    <router-link :to="'/teacher/update/' + scope.row.id">
+                        <el-button type="primary" icon="el-icon-edit">修改</el-button>
+                    </router-link>
+                        <el-button type="success" icon="el-icon-delete"
+                        @click="deleteById(scope.row.id)">删除</el-button>
                 </template>
             </el-table-column>
             </el-table>
@@ -110,6 +113,8 @@ export default {
             });          
           });
             
+        },
+        updateById(id) {
         }
     },
 }
