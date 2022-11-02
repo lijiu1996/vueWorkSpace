@@ -20,20 +20,19 @@
       <!-- 所属分类：级联下拉列表 -->
       <!-- 一级分类 -->
       <el-form-item label="课程类别">
-        <el-select v-model="courseInfo.subjectParentId" placeholder="请选择">
+        <el-select v-model="courseInfo.subjectParentId" placeholder="请选择"  @change="fillSubjectList">
           <el-option
             v-for="subject in subjectNestedList"
             :key="subject.id"
             :label="subject.title"
             :value="subject.id"
-            @change="fillSubjectList"
           />
         </el-select>
         <!-- 级联显示二级分类列表 -->
         <el-select v-model="courseInfo.subjectId" placeholder="请选择">
           <el-option
             v-for="subject in subSubjectList"
-            :key="subject.value"
+            :key="subject.id"
             :label="subject.title"
             :value="subject.id"
           />
@@ -77,7 +76,7 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button :disabled="saveBtnDisabled" type="primary" @click="next"
+        <el-button :disabled="saveBtnDisabled" type="primary" @click="saveOrUpdate"
           >保存并下一步</el-button
         >
       </el-form-item>
@@ -103,22 +102,27 @@ export default {
         cover: "",
         price: 0,
       },
-      subjectNestedList: [],
-      subSubjectList: [],
+      subjectNestedList: [],  // 一级分类列表
+      subSubjectList: [],   // 二级分类列表
       teacherList: [],
     };
   },
 
+  watch: {
+    $route(to,from) {
+      console.log('watch $route')
+      this.init()
+    }
+  },
+
   created() {
-    console.log("info created");
-    this.init();
+    console.log("info created")
+    this.init()
   },
 
   methods: {
     next() {
       console.log("next");
-      if (!this.courseInfo.id) {
-      }
       this.$router.push({ path: "/course/chapter/1" });
     },
 
@@ -158,13 +162,13 @@ export default {
 
     // 根据一级分类选择结果,填充二级分类列表
     fillSubjectList(value) {
-      console.log("88");
       for (let i = 0; i < this.subjectNestedList.length; i++) {
         if (this.subjectNestedList[i].id === value) {
           this.subSubjectList = this.subjectNestedList[i].children;
-          // this.courseInfo.subjectId = ''
+          this.courseInfo.subjectId = ''
         }
       }
+
     },
 
     saveData() {
@@ -183,7 +187,9 @@ export default {
 
     updateData() {},
 
-    saveOrUpdate() {},
+    saveOrUpdate() {
+      this.saveData()
+    },
   },
 };
 </script>
