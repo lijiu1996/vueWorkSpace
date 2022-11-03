@@ -10,32 +10,20 @@
 
     <el-form label-width="120px">
       <el-form-item label="课程标题">
-        <el-input
-          v-model="courseInfo.title"
-          placeholder=" 示例：机器学习项目课：从基础到搭建项目视频课程。专业名称注意大小写"
-        />
+        <el-input v-model="courseInfo.title" placeholder=" 示例：机器学习项目课：从基础到搭建项目视频课程。专业名称注意大小写" />
       </el-form-item>
 
       <!-- 所属分类 TODO -->
       <!-- 所属分类：级联下拉列表 -->
       <!-- 一级分类 -->
       <el-form-item label="课程类别">
-        <el-select v-model="courseInfo.subjectParentId" placeholder="请选择"  @change="fillSubjectList">
-          <el-option
-            v-for="subject in subjectNestedList"
-            :key="subject.id"
-            :label="subject.title"
-            :value="subject.id"
-          />
+        <el-select v-model="courseInfo.subjectParentId" placeholder="请选择" @change="fillSubjectList">
+          <el-option v-for="subject in subjectNestedList" :key="subject.id" :label="subject.title"
+            :value="subject.id" />
         </el-select>
         <!-- 级联显示二级分类列表 -->
         <el-select v-model="courseInfo.subjectId" placeholder="请选择">
-          <el-option
-            v-for="subject in subSubjectList"
-            :key="subject.id"
-            :label="subject.title"
-            :value="subject.id"
-          />
+          <el-option v-for="subject in subSubjectList" :key="subject.id" :label="subject.title" :value="subject.id" />
         </el-select>
       </el-form-item>
 
@@ -43,42 +31,33 @@
       <!-- 课程讲师 -->
       <el-form-item label="课程讲师">
         <el-select v-model="courseInfo.teacherId" placeholder="请选择">
-          <el-option
-            v-for="teacher in teacherList"
-            :key="teacher.id"
-            :label="teacher.name"
-            :value="teacher.id"
-          />
+          <el-option v-for="teacher in teacherList" :key="teacher.id" :label="teacher.name" :value="teacher.id" />
         </el-select>
       </el-form-item>
 
       <el-form-item label="总课时">
-        <el-input-number
-          :min="0"
-          v-model="courseInfo.lessonNum"
-          controls-position="right"
-          placeholder="请填写课程的总课时数"
-        />
+        <el-input-number :min="0" v-model="courseInfo.lessonNum" controls-position="right" placeholder="请填写课程的总课时数" />
       </el-form-item>
 
       <!-- 课程简介 TODO -->
 
       <!-- 课程封面 TODO -->
+      <el-form-item label="课程封面">
+
+        <el-upload :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload"
+          :action="BASE_API + '/service_oss/upload?host=cover'" class="avatar-uploader">
+          <img :src="courseInfo.cover">
+        </el-upload>
+
+      </el-form-item>
 
       <el-form-item label="课程价格">
-        <el-input-number
-          :min="0"
-          v-model="courseInfo.price"
-          controls-position="right"
-          placeholder="免费课程请设置为0元"
-        />
+        <el-input-number :min="0" v-model="courseInfo.price" controls-position="right" placeholder="免费课程请设置为0元" />
         元
       </el-form-item>
 
       <el-form-item>
-        <el-button :disabled="saveBtnDisabled" type="primary" @click="saveOrUpdate"
-          >保存并下一步</el-button
-        >
+        <el-button :disabled="saveBtnDisabled" type="primary" @click="saveOrUpdate">保存并下一步</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -128,6 +107,13 @@ export default {
 
     init() {
       // 初始化课程分类信息
+      if (this.$route.params && this.$route.params.id) {
+        const id = this.$route.params.id
+        // 根据id获取课程基本信息
+        this.fetchCourseInfoById(id)
+      } else {
+        this.courseInfo = { ...defaultForm }
+      }
       this.initSubjectList();
       this.initTeacherList();
     },
@@ -185,10 +171,44 @@ export default {
         });
     },
 
-    updateData() {},
+    updateData() {
+      this.saveBtnDisabled = true
+      course.updateCourseInfoById(this.courseInfo).then(response => {
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        })
+        return response// 将响应结果传递给then
+      }).then(response => {
+        this.$router.push({ path: '/edu/course/chapter/' + response.data.courseId })
+      }).catch((response) => {
+        // console.log(response)
+        this.$message({
+          type: 'error',
+          message: '保存失败'
+        })
+      })
+    },
 
     saveOrUpdate() {
       this.saveData()
+    },
+
+    // 根据id查询到课程信息
+    getCourseInfoById(id) {
+      course.getCourseInfoById(id).then(response => {
+        this.courseInfo = response.data
+        // 初始化分类信息
+        
+        // 初始化讲师信息
+        
+
+      }).catch((response) => {
+        this.$message({
+          type: 'error',
+          message: response.message
+        })
+      })
     },
   },
 };

@@ -11,5 +11,13 @@ export default {
       method: 'post',
       data: courseInfo
     })
+  },
+
+  // 2. 根据id查询课程信息
+  getCourseInfoById(id) {
+    return request({
+      url: `${api_name}/${id}`,
+      method: 'get',
+    })
   }
 }
