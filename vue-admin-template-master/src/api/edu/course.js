@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const api_name = '/service_edu/courses'
+const api_name = '/service_edu/course'
 
 export default {
 
@@ -19,5 +19,40 @@ export default {
       url: `${api_name}/${id}`,
       method: 'get',
     })
+  },
+
+  // 3. 修改课程信息
+  updateCourseInfo(courseInfo) {
+    return request({
+      url: `${api_name}`,
+      method: 'put',
+      data: courseInfo
+    })
+  },
+
+  // 4. 查询课程预览信息
+  getCoursePublishInfoById(id) {
+    return request({
+      url: `${api_name}/preview/${id}`,
+      method: 'get'
+    })
+  },
+  
+  // 5. 调用课程发布接口
+  publishCourse(id) {
+    return request({
+      url: `${api_name}/publish/${id}`,
+      method: 'put'
+    })
+  },
+
+  // 6. 根据条件查询课程列表
+  conditionList(current,total,query) {
+    return  request({
+      url: `${api_name}/page/${current}/${total}`,
+      method: 'post',
+      data: query
+    })
   }
+
 }

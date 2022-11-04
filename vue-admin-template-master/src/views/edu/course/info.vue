@@ -42,14 +42,14 @@
       <!-- 课程简介 TODO -->
 
       <!-- 课程封面 TODO -->
-      <el-form-item label="课程封面">
+      <!-- <el-form-item label="课程封面">
 
         <el-upload :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload"
           :action="BASE_API + '/service_oss/upload?host=cover'" class="avatar-uploader">
           <img :src="courseInfo.cover">
         </el-upload>
 
-      </el-form-item>
+      </el-form-item> -->
 
       <el-form-item label="课程价格">
         <el-input-number :min="0" v-model="courseInfo.price" controls-position="right" placeholder="免费课程请设置为0元" />
@@ -68,22 +68,26 @@ import course from "@/api/edu/course";
 import subject from "@/api/edu/subject";
 import teacher from "@/api/edu/teacher";
 
+const defaultForm = {
+  title: '',
+  subjectId: '',
+  teacherId: '',
+  lessonNum: 0,
+  description: '',
+  cover: '',
+  price: 0
+}
+
 export default {
   data() {
     return {
       saveBtnDisabled: false, // 保存按钮是否禁用
-      courseInfo: {
-        title: "",
-        subjectId: "",
-        teacherId: "",
-        lessonNum: 0,
-        description: "",
-        cover: "",
-        price: 0,
-      },
+      courseInfo: defaultForm,
       subjectNestedList: [],  // 一级分类列表
       subSubjectList: [],   // 二级分类列表
       teacherList: [],
+      courseId : '',
+
     };
   },
 
@@ -100,17 +104,12 @@ export default {
   },
 
   methods: {
-    next() {
-      console.log("next");
-      this.$router.push({ path: "/course/chapter/1" });
-    },
-
     init() {
       // 初始化课程分类信息
       if (this.$route.params && this.$route.params.id) {
-        const id = this.$route.params.id
+        this.courseId = this.$route.params.id
         // 根据id获取课程基本信息
-        this.fetchCourseInfoById(id)
+        this.getCourseInfoById()
       } else {
         this.courseInfo = { ...defaultForm }
       }
@@ -167,20 +166,20 @@ export default {
           });
         })
         .then((response) => {
-          this.$router.push({ path: "/edu/course/chapter/" + response.data });
+          this.$router.push({ path: "/course/chapter/" + response.data });
         });
     },
 
     updateData() {
       this.saveBtnDisabled = true
-      course.updateCourseInfoById(this.courseInfo).then(response => {
+      course.updateCourseInfo(this.courseInfo).then(response => {
         this.$message({
           type: 'success',
           message: '修改成功!'
         })
         return response// 将响应结果传递给then
       }).then(response => {
-        this.$router.push({ path: '/edu/course/chapter/' + response.data.courseId })
+        this.$router.push({ path: '/course/chapter/' + this.courseInfo.id })
       }).catch((response) => {
         // console.log(response)
         this.$message({
@@ -191,17 +190,21 @@ export default {
     },
 
     saveOrUpdate() {
-      this.saveData()
+      if(this.courseInfo.id) {
+        this.updateData()
+      } else {
+        this.saveData()
+      }
     },
 
     // 根据id查询到课程信息
-    getCourseInfoById(id) {
-      course.getCourseInfoById(id).then(response => {
+    getCourseInfoById() {
+      course.getCourseInfoById(this.courseId).then(response => {
         this.courseInfo = response.data
-        // 初始化分类信息
-        
-        // 初始化讲师信息
-        
+        // 初始化二级列表的集合
+        subject.getSubjects(this.courseInfo.subjectParentId).then(response => {
+          this.subSubjectList = response.data
+        })
 
       }).catch((response) => {
         this.$message({

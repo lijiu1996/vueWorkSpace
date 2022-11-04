@@ -43,8 +43,6 @@ export default {
   methods: {
     fetchNodeList() {
       subject.getSubjectsList().then((response) => {
-        debugger
-        
         this.subjectList = response.data;
         
       });

@@ -10,14 +10,13 @@ export default {
             url : `${api_name}/list`,
             method : "get",
         })
-    }
-    // 2.分页条件查询
-
-    // 3.增加
-
-    // 4.修改
-
-    // 5.删除
-
-    // 6.根据id值进行查询
+    },
+    // 2.根据id获取二级列表信息
+    getSubjects(id) {
+        return request({
+            url: `${api_name}/listSubject/${id}`,
+            method: 'get',
+        })
+    },
+    
 }
