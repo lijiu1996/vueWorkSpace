@@ -52,12 +52,18 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="创建时间" align="center">
+      <el-table-column label="发布状态" align="center" width="120">
+        <template slot-scope="scope">
+          {{ scope.row.status == "Draft" ? "未发布" : "已发布" }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="创建时间" align="center" width="120">
         <template slot-scope="scope">
           {{ scope.row.gmtCreate.substr(0, 10) }}
         </template>
       </el-table-column>
-      <el-table-column label="发布时间" align="center">
+      <el-table-column label="发布时间" align="center" width="120">
         <template slot-scope="scope">
           {{ scope.row.gmtModified.substr(0, 10) }}
         </template>
@@ -71,7 +77,7 @@
         <template slot-scope="scope"> {{ scope.row.buyCount }}人 </template>
       </el-table-column> -->
 
-      <el-table-column label="操作" width="150" align="center">
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <router-link :to="'/course/info/' + scope.row.id">
             <el-button type="text" size="mini" icon="el-icon-edit"
@@ -83,7 +89,13 @@
               >编辑课程章节信息</el-button
             >
           </router-link>
-          <el-button type="text" size="mini" icon="el-icon-delete">删除</el-button>
+          <el-button
+            type="text"
+            size="mini"
+            icon="el-icon-delete"
+            @click="deleteByid(scope.row.id)"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -136,7 +148,7 @@ export default {
 
     fetchData(page = 1) {
       this.page = page;
-      console.log(page)
+      console.log(page);
       course
         .conditionList(this.page, this.limit, this.searchObj)
         .then((response) => {
@@ -149,12 +161,40 @@ export default {
     },
     // 前往课程简介页面进行编辑
     resetData() {
-      this.searchObj = {}
-      this.fetchData()
+      this.searchObj = {};
+      this.fetchData();
     },
-
-
     //
+    deleteByid(id) {
+      this.$confirm(
+        "此操作将永久删除该课程，以及该课程下的章节和视频，是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(() => {
+          return course.removeCourse(id);
+        })
+        .then(() => {
+          this.fetchData();
+          this.$message({
+            type: "success",
+            message: "删除成功!",
+          });
+        })
+        .catch((response) => {
+          // 失败
+          if (response === "cancel") {
+            this.$message({
+              type: "info",
+              message: "已取消删除",
+            });
+          }
+        });
+    },
   },
 };
 </script>

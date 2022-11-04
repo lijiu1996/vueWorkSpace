@@ -53,6 +53,14 @@ export default {
       method: 'post',
       data: query
     })
+  },
+
+  //7. 删除课程信息
+  removeCourse(id) {
+    return request({
+      url: `${api_name}/${id}`,
+      method: 'delete',
+    })
   }
 
 }

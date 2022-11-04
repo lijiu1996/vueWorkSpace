@@ -40,6 +40,9 @@
       </el-form-item>
 
       <!-- 课程简介 TODO -->
+      <el-form-item label="课程简介">
+          <el-input v-model="courseInfo.description" placeholder='课程简介'></el-input>
+      </el-form-item>
 
       <!-- 课程封面 TODO -->
       <!-- <el-form-item label="课程封面">
@@ -67,6 +70,7 @@
 import course from "@/api/edu/course";
 import subject from "@/api/edu/subject";
 import teacher from "@/api/edu/teacher";
+import { placeholder } from "@babel/types";
 
 const defaultForm = {
   title: '',
@@ -164,9 +168,7 @@ export default {
             type: "success",
             message: "保存成功!",
           });
-        })
-        .then((response) => {
-          this.$router.push({ path: "/course/chapter/" + response.data });
+          this.$router.push({ path: "/course/chapter/" + response.data })
         });
     },
 
